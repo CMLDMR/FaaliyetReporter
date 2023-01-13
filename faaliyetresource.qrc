@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/files">
+        <file>logoNoOpacity.png</file>
+        <file>ataturk.jpg</file>
+        <file>logo.png</file>
+    </qresource>
+</RCC>
