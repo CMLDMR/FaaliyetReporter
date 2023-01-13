@@ -18,21 +18,25 @@ find_package(Qt6 6.2 COMPONENTS Core Gui Xml Widgets PrintSupport REQUIRED)
 set(bsoncxx_DIR C:/Mongo/mongo-msvc2022x64-noBoost/lib/cmake/bsoncxx-3.7.0)
 set(mongocxx_DIR C:/Mongo/mongo-msvc2022x64-noBoost/lib/cmake/mongocxx-3.7.0)
 
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "C:/Qt/KDReports/lib/cmake")
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "C:/Qt/KDReports/lib/cmake/KDReports-qt6")
 
 
 include_directories("${CMAKE_SOURCE_DIR}")
 include_directories("C:/SerikBLDCoreRelease/MSVC2022x64noBoost/include/bilgiEdinme")
+include_directories("C:/Qt/KDReports/include/KDReports-qt6")
 
 
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE FORMS ${CMAKE_CURRENT_SOURCE_DIR}/*.ui)
 
+qt_add_resources(QT_RESOURCES faaliyetresource.qrc)
+
 set(PROJECT_SOURCES
     ${HEADERS}
     ${SOURCES}
     ${FORMS}
+    ${QT_RESOURCES}
 )
 
 add_executable( FaaliyetReporter ${PROJECT_SOURCES} )
@@ -47,6 +51,7 @@ target_link_directories(FaaliyetReporter PUBLIC "C:/SerikBLDCoreRelease/MSVC2022
 
 find_package(mongocxx REQUIRED)
 find_package(bsoncxx REQUIRED)
+find_package(KDReports-qt6 REQUIRED)
 include_directories(${LIBMONGOCXX_INCLUDE_DIR})
 include_directories(${LIBBSONCXX_INCLUDE_DIR})
 
@@ -54,7 +59,7 @@ target_link_libraries(FaaliyetReporter PRIVATE mongo::bsoncxx_shared)
 target_link_libraries(FaaliyetReporter PRIVATE mongo::mongocxx_shared)
 
 
-find_package(KDReports REQUIRED)
+#find_package(KDReports REQUIRED)
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Qt/KDReport/msvc2017_64/lib/cmake") #KDReports 1.9
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Qt/KDReports//lib/cmake")
 
@@ -62,7 +67,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Qt/KDReports//lib/cmake")
 #target_link_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReport/msvc2017_64/lib")#KDReports 1.9
 #target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReport/msvc2017_64/include")#KDReports 1.9
 
-target_link_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports//lib")
+target_link_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/lib")
 target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/include")
 
 
@@ -70,7 +75,7 @@ target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/include")
 
 
 
-target_link_libraries(FaaliyetReporter PRIVATE Qt::Core Qt::Gui Qt::Xml Qt::Widgets Qt::PrintSupport SerikBLDCore KDReports)
+target_link_libraries(FaaliyetReporter PRIVATE Qt::Core Qt::Gui Qt::Xml Qt::Widgets Qt::PrintSupport SerikBLDCore kdreports-qt62)
 
 #target_compile_options( FaaliyetReporter PRIVATE -fexceptions )
 

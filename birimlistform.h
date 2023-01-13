@@ -33,12 +33,6 @@
 
 
 
-#define log qDebug() << __LINE__ << __FUNCTION__
-
-
-
-
-
 namespace Ui {
 class BirimListForm;
 }
@@ -81,18 +75,18 @@ private slots:
     void on_pushButton_LoadList_clicked();
 
 private:
-    Ui::BirimListForm *ui;
+    Ui::BirimListForm *ui = nullptr;
 
-    BirimListModel* mModel;
+    BirimListModel* mModel = nullptr;
 
-    SerikBLDCore::Faaliyet::Manager* mFaaliyetManager;
+    SerikBLDCore::Faaliyet::Manager* mFaaliyetManager = nullptr;
 
-    SerikBLDCore::DB* mDB;
+    SerikBLDCore::DB* mDB = nullptr;
 
-    SerikBLDCore::PersonelManager* mPersonelManager;
+    SerikBLDCore::PersonelManager* mPersonelManager = nullptr;
 
 
-    KDReports::PreviewWidget *previewWidget;
+    KDReports::PreviewWidget *previewWidget = nullptr;
 
     KDReports::Report *mReport = nullptr;
 
@@ -106,13 +100,12 @@ private:
 
     void buildLiderler();
 
-    SerikBLDCore::Meclis::UyeManager *mMeclisUyesiManager;
-    SerikBLDCore::TCManagerV2 *mTCManager;
+    SerikBLDCore::Meclis::UyeManager *mMeclisUyesiManager = nullptr;
+    SerikBLDCore::TCManagerV2 *mTCManager = nullptr;
 
     int currentProgressValue;
 
-
-
+    bool loadSavedManagerList();
 
 };
 

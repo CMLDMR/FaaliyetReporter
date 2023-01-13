@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1238</width>
-    <height>743</height>
+    <width>1428</width>
+    <height>770</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,12 @@
      </property>
      <property name="title">
       <string>Birimler</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <property name="leftMargin">
@@ -70,6 +76,13 @@
          <widget class="QPushButton" name="pushButton_LoadList">
           <property name="text">
            <string>Kayıttan Yükle</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_diger_bilgiler">
+          <property name="text">
+           <string>Diğer Bilgiler</string>
           </property>
          </widget>
         </item>

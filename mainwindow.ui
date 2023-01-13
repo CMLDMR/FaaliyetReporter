@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>384</width>
-    <height>587</height>
+    <width>1263</width>
+    <height>658</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,8 +29,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>384</width>
-     <height>21</height>
+     <width>1263</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -40,7 +40,7 @@
   <customwidget>
    <class>BirimListForm</class>
    <extends>QWidget</extends>
-   <header>birimlistform.h</header>
+   <header location="global">birimlistform.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

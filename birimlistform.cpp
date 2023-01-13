@@ -1,6 +1,7 @@
 #include "birimlistform.h"
 #include "ui_birimlistform.h"
-
+#include "extrainformationdialog.h"
+#include <QMessageBox>
 
 #include <QDebug>
 
@@ -14,6 +15,10 @@ BirimListForm::BirimListForm(QWidget *parent) :
     previewWidget = new KDReports::PreviewWidget(this);
     ui->verticalLayout_PReview->addWidget (previewWidget);
 
+    connect(ui->pushButton_diger_bilgiler,&QPushButton::clicked,[=](){
+        auto mDialog = std::make_unique<ExtraInformationDialog>();
+        mDialog.get()->exec();
+    });
 }
 
 BirimListForm::~BirimListForm()
@@ -23,6 +28,8 @@ BirimListForm::~BirimListForm()
 
 void BirimListForm::initWidget(SerikBLDCore::DB *_mDB)
 {
+
+
 
     mDB = _mDB;
 
@@ -34,7 +41,7 @@ void BirimListForm::initWidget(SerikBLDCore::DB *_mDB)
 
     mTCManager = new SerikBLDCore::TCManagerV2(_mDB);
 
-    mModel = new BirimListModel(_mDB);
+    mModel = new BirimListModel(mDB);
     ui->tableView->setModel (mModel);
 
 }
@@ -185,7 +192,7 @@ void BirimListForm::on_pushButton_2_clicked()
         mReport = new KDReports::Report(this);
     }
 
-    mReport->setWatermarkImage (QImage("logo.png"));
+    mReport->setWatermarkImage (QImage(":/files/logo.png"));
 
     this->initHeader ();
     this->buildMeclisUyeleri ();
@@ -227,7 +234,9 @@ void BirimListForm::on_pushButton_2_clicked()
 
     ui->progressBar->setValue (ui->progressBar->maximum ());
 
-    previewWidget->setReport (mReport);
+    if( mReport ){
+        previewWidget->setReport (mReport);
+    }
 
 }
 
@@ -256,7 +265,7 @@ void BirimListForm::on_pushButton_PrintWidget_clicked()
         mReport = new KDReports::Report(this);
     }
 
-    mReport->setWatermarkImage (QImage("logo.png"));
+    mReport->setWatermarkImage (QImage(":/files/logo.png"));
 
     this->initHeader ();
 
@@ -363,7 +372,7 @@ void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetIt
 
 
         {
-            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, iç kontroller, iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/2021"));
+            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, iç kontroller, iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/"+QString::number(ui->spinBox_yil->value())));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
@@ -632,7 +641,7 @@ void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetIt
                     }
                 }
             }
-            tableElement.setBorder (.25);
+            tableElement.setBorder (1);
             tableElement.setBorderBrush (QBrush(QColor(75,75,75)));
             tableElement.setWidth (100,KDReports::Percent);
 
@@ -865,13 +874,10 @@ void BirimListForm::buildMeclisUyeleri()
 
 void BirimListForm::buildLiderler()
 {
-
-    std::cout << __LINE__ << " " << __FUNCTION__ << "\n";
-
     {
         QImage imgLogo;
 
-        if( imgLogo.load ("logoNoOpacity.png") ){
+        if( imgLogo.load (":/files/logoNoOpacity.png") ){
 
 
             mReport->addVerticalSpacing (60);
@@ -898,7 +904,7 @@ void BirimListForm::buildLiderler()
     {
         QImage imgLogo;
 
-        if( imgLogo.load ("ataturk.jpg") ){
+        if( imgLogo.load (":/files/ataturk.jpg") ){
 
 
             KDReports::ImageElement element(imgLogo);
@@ -1003,13 +1009,6 @@ void BirimListForm::buildLiderler()
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
         }
 
-        //        {
-        //            KDReports::TextElement title(QString("\tDeğerli Çalışma Arkadaşlarım,"));
-        //            title.setFontFamily ("Tahoma");
-        //            title.setPointSize (12);
-        //            mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
-        //        }
-
         {
             KDReports::TextElement title(QString("\tGöreve geldiğimiz 2019 yılından bugüne şeffaf bir yerel yönetim anlayışı ile "
                                                  "çalışmalarımıza devam ediyoruz. Geride bıraktığımız süreç içerisinde pandeminin yarattığı "
@@ -1039,18 +1038,12 @@ void BirimListForm::buildLiderler()
         {
             KDReports::TextElement title(QString("\tBütün bu çalışmalarımızda emeğiyle, özverisiyle bizleri destekleyen çalışma arkadaşlarımıza, "
                                                  "meclis üyelerimize ve her koşulda yanımızda olan siz değerli hemşehrilerimize teşekkür eder, "
-                                                 "2021 Yılı Faaliyet Raporumuzu bilgilerinize sunarım."));
+                                                 + QString::number(ui->spinBox_yil->value()) + " Yılı Faaliyet Raporumuzu bilgilerinize sunarım."));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
         }
 
-
-        //        {
-        //            KDReports::TextElement title(QString("\tBir yıllık faaliyet raporumuzu siz halkımızın olur ve görüşlerine sunarken, çalışmalarımıza destek veren tüm meclis üyesi ve mesai arkadaşlarımıza teşekkür ediyor, sevgi ve saygılarımı sunuyorum."));
-        //            title.setFontFamily ("Tahoma");
-        //            title.setPointSize (12);
-        //            mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
         mReport->addVerticalSpacing (5);
         //        }
 
@@ -1082,9 +1075,6 @@ void BirimListForm::buildLiderler()
         mReport->addPageBreak ();
     }
 
-
-
-
     {
 
 
@@ -1113,7 +1103,7 @@ void BirimListForm::buildLiderler()
 
 
         {
-            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, iç kontroller, iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/2021"));
+            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, iç kontroller, iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/"+ QString::number(ui->spinBox_yil->value())));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
@@ -1148,6 +1138,49 @@ void BirimListForm::buildLiderler()
 
         mReport->addPageBreak ();
     }
+
+
+}
+
+bool BirimListForm::loadSavedManagerList()
+{
+
+    QFile file("list.dat");
+
+    if( file.open (QIODevice::ReadOnly) ){
+
+        int row = 0 ;
+
+        QDataStream out(&file);
+
+        out >> row;
+
+        if( row ){
+            mModel->removeRows (0,mModel->rowCount ());
+        }
+
+        for( int i = 0 ; i < row ; i++ ){
+
+            QString birim;
+            QString mudur;
+            QString vekil;
+
+            out >> birim;
+            out >> mudur;
+            out >> vekil;
+
+            mModel->insertRow (0,new QStandardItem(birim));
+            mModel->setItem (0,1,new QStandardItem(mudur));
+            mModel->setItem (0,2,new QStandardItem(vekil));
+
+        }
+
+        file.close();
+        return true;
+    }else{
+        return false;
+    }
+
 
 
 }
@@ -1227,8 +1260,6 @@ void BirimListForm::initHeader()
         mReport->header ().addElement (tableELement);
     }
 
-
-
     // Footer information
     {
         KDReports::HLineElement hLineElement;
@@ -1241,22 +1272,10 @@ void BirimListForm::initHeader()
 
 
         tableELement.cell (0,0).addElement (KDReports::TextElement("http://www.serik.bel.tr/"),Qt::AlignLeft);
-
-        //        {
-        //            KDReports::TextElement headerElement1;
-        //            headerElement1.setText (QString("%1 Faaliyet Raporu").arg (this->selectedYear ()));
-        //            headerElement1.setTextColor (QColor(0,25,55));
-        //            headerElement1.setBold (true);
-        //            headerElement1.setFontFamily ("Arial");
-        //            headerElement1.setPointSize (10);
-        //            tableELement.cell(0,1).addElement (headerElement1,Qt::AlignRight);
-        //        }
         tableELement.cell (0,1).addElement (KDReports::TextElement("Sayfa "),Qt::AlignRight);
         tableELement.cell (0,0).setRowSpan (1);
 
         tableELement.cell (0,1).addVariable (KDReports::PageNumber);
-        //        tableELement.cell (0,1).addElement (KDReports::TextElement(" / "));
-        //        tableELement.cell (0,1).addVariable( KDReports::PageCount );
         tableELement.setWidth (100,KDReports::Unit::Percent);
         tableELement.setBackground (QBrush(QColor(0,236,106,50)));
 
@@ -1287,34 +1306,7 @@ void BirimListForm::on_pushButton_SaveList_clicked()
 
 void BirimListForm::on_pushButton_LoadList_clicked()
 {
-    QFile file("list.dat");
-
-    if( file.open (QIODevice::ReadOnly) ){
-
-        int row = 0 ;
-
-        QDataStream out(&file);
-
-        out >> row;
-
-        if( row ){
-            mModel->removeRows (0,mModel->rowCount ());
-        }
-
-        for( int i = 0 ; i < row ; i++ ){
-
-            QString birim;
-            QString mudur;
-            QString vekil;
-
-            out >> birim;
-            out >> mudur;
-            out >> vekil;
-
-            mModel->insertRow (0,new QStandardItem(birim));
-            mModel->setItem (0,1,new QStandardItem(mudur));
-            mModel->setItem (0,2,new QStandardItem(vekil));
-
-        }
+    if( !this->loadSavedManagerList() ){
+        QMessageBox::information(this,"Uyarı","Kayıt Açılamadı. Listeyi Kayıt Dedikten Sonra Kullanılabilir");
     }
 }
