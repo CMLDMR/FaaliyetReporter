@@ -32,8 +32,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 
-INCLUDEPATH += C:/boost/boost
-DEPENDPATH += C:/boost/boost
+INCLUDEPATH += C:/local/boost_1_81_0
+DEPENDPATH += C:/local/boost_1_81_0
 
 
 

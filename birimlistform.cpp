@@ -268,20 +268,20 @@ void BirimListForm::on_pushButton_PrintWidget_clicked()
 
     int birimCounter = 1;
 
-    //    this->buildLiderler();
+//        this->buildLiderler();
 
     this->buildMeclisUyeleri ();
 
-    //    KDReports::TextElement icindekiler1;
-    //    icindekiler1.setText ("İçindekiler");
-    //    icindekiler1.setFontFamily ("Cambria");
-    //    icindekiler1.setPointSize (13);
-    //    mReport->addElement (icindekiler1);
-    //    mReport->addVerticalSpacing (0.05);
+    KDReports::TextElement icindekiler1;
+    icindekiler1.setText ("İçindekiler");
+    icindekiler1.setFontFamily ("Cambria");
+    icindekiler1.setPointSize (13);
+    mReport->addElement (icindekiler1);
+    mReport->addVerticalSpacing (0.05);
 
-    //    this->buildContent (faaliyetItem.get ());
+    this->buildContent (faaliyetItem.get ());
 
-    //    mReport->addPageBreak ();
+    mReport->addPageBreak ();
 
     buildReport (faaliyetItem.get (),birimCounter);
 
@@ -462,6 +462,8 @@ void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetIt
 
         if( item.isBaslik () ){
 
+//            qDebug() << "Baslik Counter: "<<bsoncxx::to_json(item.view()).c_str() << "\n";
+
             KDReports::Frame frame;
 
             baslikCounter++;
@@ -498,6 +500,9 @@ void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetIt
 
         if( item.isAltBaslik () ){
             altBaslikCOunter++;
+
+//            qDebug() << "Alt Baslik Counter: "<<bsoncxx::to_json(item.view()).c_str() << "\n";
+//            qDebug() << "page ID: " << QString("id_%1_%2").arg(faaliyetItem->oid ().value ().to_string ().c_str ()).arg (idCounter),QString::number (mReport->numberOfPages ());
 
             KDReports::Frame frame;
 
@@ -632,8 +637,8 @@ void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetIt
                     }
                 }
             }
-            tableElement.setBorder (.25);
-            tableElement.setBorderBrush (QBrush(QColor(75,75,75)));
+            tableElement.setBorder (1);
+            tableElement.setBorderBrush (QBrush(QColor(150,150,150)));
             tableElement.setWidth (100,KDReports::Percent);
 
             mReport->addElement (tableElement);
@@ -655,10 +660,27 @@ void BirimListForm::buildContent(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetI
     int i = 0;
     int id = 0 ;
 
-    auto arr = faaliyetItem->getFaaliyetList ();
+    SerikBLDCore::Faaliyet::FaaliyetItem* __faaliyetItem = new SerikBLDCore::Faaliyet::FaaliyetItem(*faaliyetItem);
+
+
+    std::vector<SerikBLDCore::Faaliyet::RaporItem> arrList;
+    try {
+        auto view = faaliyetItem->view()["faaliyet"].get_array().value;
+
+        for( const auto &item : view ){
+//            qDebug() << "--"<<bsoncxx::to_json(item.get_document().view()).c_str() <<"\n";
+
+            SerikBLDCore::Faaliyet::RaporItem _item;
+            _item.setDocumentView(item.get_document().view());
+
+            arrList.push_back(_item);
+        }
+    } catch (bsoncxx::exception &e) {
+        qDebug() << e.what();
+    }
 
     {
-        std::string baslikStr = toUpperCase (faaliyetItem->getBirim ()).toStdString ()/*faaliyetItem->getBirim ()*/;
+        std::string baslikStr = toUpperCase (__faaliyetItem->getBirim ()).toStdString ()/*faaliyetItem->getBirim ()*/;
         if( faaliyetItem->getBirim () == "Başkanlık" ){
             baslikStr = "GENEL BİLGİLER";
         }
@@ -671,12 +693,12 @@ void BirimListForm::buildContent(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetI
         contentTable.cell (i,0).addElement (tocElement,Qt::AlignLeft);
 
         KDReports::TextElement indexText(" index ");
-        indexText.setId( QString("id_%1_%2").arg (faaliyetItem->oid ().value ().to_string ().c_str ()).arg (id++));
+        indexText.setId( QString("id_%1_%2").arg (__faaliyetItem->oid ().value ().to_string ().c_str ()).arg (id++));
         contentTable.cell (i,1).addElement (indexText,Qt::AlignRight);
 
     }
 
-    for( const auto &item : arr ){
+    for( const auto &item : arrList ){
 
         if( item.isBaslik () ){
             KDReports::TextElement tocElement(QString("   ") + item.getText ().c_str ());
@@ -692,6 +714,7 @@ void BirimListForm::buildContent(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetI
         }
 
         if( item.isAltBaslik () ){
+
             KDReports::TextElement tocElement(QString("       ") + item.getText ().c_str ());
             tocElement.setFontFamily ("Arial");
             tocElement.setPointSize (9);
@@ -705,14 +728,10 @@ void BirimListForm::buildContent(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetI
 
         }
 
-
-
     }
 
     contentTable.setWidth (100,KDReports::Unit::Percent);
     mReport->addElement (contentTable);
-
-
 
 }
 

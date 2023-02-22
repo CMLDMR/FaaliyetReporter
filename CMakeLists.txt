@@ -8,17 +8,16 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS /Zc:__cplusplus)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
 
 message("MSVC_TOOLSET_VERSION   " ${MSVC_TOOLSET_VERSION})
 message("CMAKE_CXX_COMPILER_VERSION   " ${CMAKE_CXX_COMPILER_VERSION})
 
-find_package(Qt6 6.2 COMPONENTS Core Gui Xml Widgets PrintSupport REQUIRED)
+find_package(Qt6 6.3 COMPONENTS Core Gui Xml Widgets PrintSupport REQUIRED)
+
 
 set(bsoncxx_DIR C:/Mongo/mongo-msvc2022x64-noBoost/lib/cmake/bsoncxx-3.7.0)
 set(mongocxx_DIR C:/Mongo/mongo-msvc2022x64-noBoost/lib/cmake/mongocxx-3.7.0)
-
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "C:/Qt/KDReports/lib/cmake")
 
 
 include_directories("${CMAKE_SOURCE_DIR}")
@@ -54,15 +53,14 @@ target_link_libraries(FaaliyetReporter PRIVATE mongo::bsoncxx_shared)
 target_link_libraries(FaaliyetReporter PRIVATE mongo::mongocxx_shared)
 
 
-find_package(KDReports REQUIRED)
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Qt/KDReport/msvc2017_64/lib/cmake") #KDReports 1.9
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Qt/KDReports//lib/cmake")
-
-
 #target_link_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReport/msvc2017_64/lib")#KDReports 1.9
 #target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReport/msvc2017_64/include")#KDReports 1.9
 
-target_link_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports//lib")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Qt/KDReports/lib/cmake")
+find_package(KDReports-qt6 REQUIRED)
+target_link_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/lib")
 target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/include")
 
 
@@ -70,7 +68,7 @@ target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/include")
 
 
 
-target_link_libraries(FaaliyetReporter PRIVATE Qt::Core Qt::Gui Qt::Xml Qt::Widgets Qt::PrintSupport SerikBLDCore KDReports)
+target_link_libraries(FaaliyetReporter PRIVATE Qt::Core Qt::Gui Qt::Xml Qt::Widgets Qt::PrintSupport SerikBLDCore KDReports-qt6)
 
 #target_compile_options( FaaliyetReporter PRIVATE -fexceptions )
 

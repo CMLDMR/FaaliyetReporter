@@ -24,6 +24,9 @@
 #include "KDReports-qt6/KDReports.h"
 #include <KDReports-qt6/KDReportsFrame.h>
 
+//#include <KDReports/KDReports.h>
+//#include <KDReports/KDReportsFrame.h>
+
 
 #include "configuration.h"
 #include <iomanip>

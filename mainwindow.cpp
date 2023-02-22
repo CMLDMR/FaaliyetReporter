@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->showMaximized();
+//    this->showMaximized();
 
     try {
         mClient = new mongocxx::client(mongocxx::uri(_url));
