@@ -1,6 +1,7 @@
 #include "birimlistform.h"
 #include "ui_birimlistform.h"
 
+#include <QTextList>
 
 #include <QDebug>
 
@@ -268,7 +269,7 @@ void BirimListForm::on_pushButton_PrintWidget_clicked()
 
     int birimCounter = 1;
 
-//        this->buildLiderler();
+    //        this->buildLiderler();
 
     this->buildMeclisUyeleri ();
 
@@ -339,6 +340,13 @@ QString BirimListForm::toUpperCase(const std::string &word)
 void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetItem, int &birimCounter)
 {
 
+    qreal top,bottom,left,right;
+    mReport->getMargins(&top,&bottom,&left,&right);
+
+    qDebug() << top << bottom << left << right;
+
+    mReport->setMargins(top,9,bottom,8);
+
     {
 
         KDReports::TextElement title1(QString("İÇ KONTROL GÜVENCE BEYANI"));
@@ -363,7 +371,9 @@ void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetIt
 
 
         {
-            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, iç kontroller, iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/2021"));
+            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, iç kontroller, "
+                                                 "iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. "
+                                                 "Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/"+QString::number(ui->spinBox_yil->value())));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
@@ -460,190 +470,317 @@ void BirimListForm::buildReport(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetIt
         ui->progressBar->setValue (currentProgressValue++);
 
 
-        if( item.isBaslik () ){
-
-//            qDebug() << "Baslik Counter: "<<bsoncxx::to_json(item.view()).c_str() << "\n";
-
-            KDReports::Frame frame;
-
-            baslikCounter++;
-            KDReports::TextElement baslik;
-            baslik.setText (QString("%1.%2.  ").arg (birimCounter).arg (baslikCounter) +item.getText ().c_str ());
-            baslik.setFontFamily ("Tahoma");
-            baslik.setPointSize (14);
-            baslik.setTextColor (QColor(100,100,100));
-            frame.addElement (baslik);
-            altBaslikCOunter = 0;
-
-
-            //            frame.setLeftMargin (0);
-            frame.setBorder (0);
-            frame.setPadding (0);
-            //            frame.setTopMargin (0);
-            //            frame.setBottomMargin (0);
-            frame.setBorder (0);
-
-            mReport->addElement (frame);
-
-            mReport->associateTextValue (QString("id_%1_%2").arg(faaliyetItem->oid ().value ().to_string ().c_str ()).arg (idCounter),QString::number (mReport->numberOfPages ()));
-            idCounter++;
-
-        }
-
-        if( item.isPageBreak () ){
-            mReport->addPageBreak ();
-        }
+        if( !item.isDeleted() ){
 
 
 
+            if( item.isBaslik () ){
+
+                //            qDebug() << "Baslik Counter: "<<bsoncxx::to_json(item.view()).c_str() << "\n";
+
+                KDReports::Frame frame;
+
+                baslikCounter++;
+                KDReports::TextElement baslik;
+                baslik.setText (QString("%1.%2.  ").arg (birimCounter).arg (baslikCounter) +item.getText ().c_str ());
+                baslik.setFontFamily ("Tahoma");
+                baslik.setPointSize (14);
+                baslik.setTextColor (QColor(100,100,100));
+                frame.addElement (baslik);
+                altBaslikCOunter = 0;
 
 
-        if( item.isAltBaslik () ){
-            altBaslikCOunter++;
+                //            frame.setLeftMargin (0);
+                frame.setBorder (0);
+                frame.setPadding (0);
+                //            frame.setTopMargin (0);
+                //            frame.setBottomMargin (0);
+                frame.setBorder (0);
 
-//            qDebug() << "Alt Baslik Counter: "<<bsoncxx::to_json(item.view()).c_str() << "\n";
-//            qDebug() << "page ID: " << QString("id_%1_%2").arg(faaliyetItem->oid ().value ().to_string ().c_str ()).arg (idCounter),QString::number (mReport->numberOfPages ());
+                mReport->addElement (frame);
 
-            KDReports::Frame frame;
+                mReport->associateTextValue (QString("id_%1_%2").arg(faaliyetItem->oid ().value ().to_string ().c_str ()).arg (idCounter),QString::number (mReport->numberOfPages ()));
+                idCounter++;
 
-
-            KDReports::TextElement altbaslik;
-            altbaslik.setText (QString("     %1.%2.%3  ").arg (birimCounter).arg (baslikCounter).arg (altBaslikCOunter) + item.getText ().c_str ());
-            altbaslik.setFontFamily ("Tahoma");
-            altbaslik.setPointSize (11);
-            altbaslik.setBold (true);
-            altbaslik.setTextColor (QColor(75,75,75));
-
-            //            frame.addElement (altbaslik,Qt::AlignJustify);
-
-            //            frame.setLeftMargin (0);
-            frame.setBorder (0);
-            frame.setPadding (0);
-            //            frame.setTopMargin (-5);
-            //            frame.setBottomMargin (0);
-            frame.setBorder (0);
-
-            //            mReport->addElement (frame);
-            mReport->addElement (altbaslik,Qt::AlignJustify);
+            }
 
 
-            mReport->associateTextValue (QString("id_%1_%2").arg(faaliyetItem->oid ().value ().to_string ().c_str ()).arg (idCounter),QString::number (mReport->numberOfPages ()));
-            idCounter++;
 
-        }
+            if( item.isPageBreak () ){
+                qDebug() << "Page Break";
+                mReport->addPageBreak ();
+            }
+
+
+
+
+
+            if( item.isAltBaslik () ){
+                altBaslikCOunter++;
+
+                KDReports::TextElement altbaslik;
+                altbaslik.setText (QString("     %1.%2.%3  ").arg (birimCounter).arg (baslikCounter).arg (altBaslikCOunter) + item.getText ().c_str ());
+                altbaslik.setFontFamily ("Tahoma");
+                altbaslik.setPointSize (11);
+                altbaslik.setBold (true);
+                altbaslik.setTextColor (QColor(75,75,75));
+
+                mReport->addElement (altbaslik,Qt::AlignJustify);
+
+                mReport->associateTextValue (QString("id_%1_%2").arg(faaliyetItem->oid ().value ().to_string ().c_str ()).arg (idCounter),QString::number (mReport->numberOfPages ()));
+                idCounter++;
+
+            }
 
 
 
 
 
 
-        if( item.isParagraf () ){
+            if( item.isParagraf () ){
 
-            QString htmlStr = item.getText ().c_str ();
-
-            //                KDReports::Frame frame;
-
-            QTextDocument editor;
-            editor.setHtml (htmlStr);
-            QFont font;
-            font.setFamily ("Tahoma");
-            font.setPointSize (11);
-            editor.setDefaultFont (font);
-            editor.setDefaultTextOption (QTextOption(Qt::AlignmentFlag::AlignJustify));
-            KDReports::HtmlElement paragraf;
-            paragraf.setHtml (editor.toHtml ());
-            mReport->addElement (paragraf,Qt::AlignJustify);
-
-        }
+                QString htmlStr = item.getText ().c_str ();
 
 
 
-
-        if( item.isImg () ){
-            mReport->addVerticalSpacing (0.3);
-
-            SerikBLDCore::Faaliyet::ImgItem imgItem;
-            imgItem.setDocumentView (item.view ());
-
-            auto path = mDB->downloadFile (imgItem.getImgOid ().c_str ());
-
-            QImage img;
-            if( img.load (path.c_str ())){
-
-
-                KDReports::ImageElement imgElement(img);
-                imgElement.setWidth (100,KDReports::Percent);
+                if(true){
+                    QTextDocument editor;
+                    editor.setHtml (htmlStr);
+                    QFont font;
+                    font.setFamily ("Tahoma");
+                    font.setPointSize (11);
+                    editor.setDefaultFont (font);
+                    QTextOption textOption;
+                    textOption.setAlignment(Qt::AlignJustify);
+                    editor.setDefaultTextOption (textOption);
 
 
-                mReport->addElement (imgElement,Qt::AlignCenter);
+                    QTextCursor* myCursor = new QTextCursor(&editor);
+
+                    if( myCursor->block().textList() ){
+                        qDebug() << "block().textList()" << myCursor->block().textList();
+
+                    }else{
+                        QTextBlockFormat format;
+                        auto lineString = myCursor->block().text();
+                        qDebug() << lineString.size() << "------------";
+                        if( lineString.size() == 1 ){
+                            qDebug() << "digitValue "<<lineString.front().digitValue();
+                            if( lineString.front().digitValue() == -1 ){
+                                format.setBackground(Qt::red);
+                                qDebug() << "Empty Text " << myCursor->block().text();
+                                myCursor->insertText("Boş Satır Eklenmiş. Lütfen www.serik.bel.tr den Siliniz.");
+                            }
+                        }
+                        //                        format.setBackground(Qt::gray);
+                        //                    format.setForeground(Qt::white);
+                        format.setBottomMargin(8);
+                        format.setAlignment(Qt::AlignmentFlag::AlignJustify);
+                        format.setIndent(1);
+                        myCursor->setBlockFormat(format);
+                    }
 
 
-                KDReports::TextElement imgTitle;
-                //  10 Karakter Boşluk
-                imgTitle.setText (item.getText ().c_str ());
-                imgTitle.setFontFamily ("Tahoma");
-                imgTitle.setPointSize (11);
-                mReport->addElement (imgTitle,Qt::AlignCenter);
+                    while( myCursor->movePosition(QTextCursor::NextBlock,QTextCursor::MoveAnchor) ){
+                        if( myCursor->block().textList() ){
+                            auto textList = myCursor->block().textList();
+                            QTextListFormat listFormat;
+                            listFormat.setStyle(QTextListFormat::ListDisc);
+                            textList->setFormat(listFormat);
 
+
+                            for( auto &formatRange : myCursor->block().textFormats() ){
+                                formatRange.format.setFontCapitalization(QFont::AllUppercase);
+                            }
+
+
+                            for( int i = 0 ; i < textList->count() ; i++ ){
+                                textList->item(i).blockFormat().setAlignment(Qt::AlignmentFlag::AlignJustify);
+                                textList->item(i).blockFormat().setBackground(Qt::red);
+                            }
+
+
+                        }else{
+                            QTextBlockFormat format;
+                            auto lineString = myCursor->block().text();
+                            qDebug() << lineString.size() << "------------";
+                            if( lineString.size() == 1 ){
+                                qDebug() << "digitValue "<<lineString.front().digitValue();
+                                if( lineString.front().digitValue() == -1 ){
+                                    format.setBackground(Qt::red);
+                                    qDebug() << "Empty Text " << myCursor->block().text();
+                                    myCursor->insertText("Boş Satır Eklenmiş. Lütfen www.serik.bel.tr den Siliniz.");
+                                }
+                            }
+
+                            format.setAlignment(Qt::AlignmentFlag::AlignJustify);
+                            format.setBottomMargin(8);
+                            myCursor->setBlockFormat(format);
+
+                        }
+                    }
+
+                    KDReports::HtmlElement paragraf;
+                    paragraf.setHtml (editor.toHtml ());
+
+                    mReport->addElement (paragraf,Qt::AlignJustify);
+                    mReport->addVerticalSpacing(1);
+                }else{
+                    QTextDocument editor;
+                    editor.setHtml (htmlStr);
+
+                    QTextDocument editorNew;
+                    QTextCursor* myCursor = new QTextCursor(&editorNew);
+                    //                QTextBlockFormat format;
+                    //                format.setBackground(Qt::red);
+                    //                myCursor->setBlockFormat(format);
+
+                    QTextBlock currentBlock = editor.begin();
+
+                    while ( currentBlock.isValid() ) {
+
+
+                        auto list = currentBlock.textList();
+
+                        if( list ){
+                            qDebug() << "TextList" << list->count();
+                            for( int i = 0  ; i < list->count() ; i++ ){
+                                auto item = list->item(i);
+                                qDebug() << item.text();
+                            }
+                        }else{
+                            auto format = currentBlock.blockFormat();
+                            //                    format.setBackground(Qt::red);
+                            //                    format.setAlignment(Qt::AlignJustify);
+                            auto charFormat = currentBlock.charFormat();
+
+                            if( format.isBlockFormat() ){
+                                QTextBlockFormat newFormat;
+                                //                        newFormat = format.toBlockFormat();
+                                //                        newFormat.setBackground(Qt::red);
+                                //                        myCursor->insertBlock(newFormat);
+                                myCursor->setBlockFormat(newFormat);
+                                charFormat.setFont(QFont("Tahoma",11));
+                                myCursor->setCharFormat(charFormat);
+                                myCursor->insertText(currentBlock.text());
+
+                            }else{
+                                qDebug() << "Not Block Format";
+                            }
+                        }
+                        currentBlock = currentBlock.next();
+                    }
+
+                    KDReports::HtmlElement paragraf;
+                    paragraf.setHtml (editorNew.toHtml ());
+                    //            paragraf.setHtml (htmlStr);
+
+                    mReport->addElement (paragraf,Qt::AlignJustify);
+                    mReport->addVerticalSpacing(1);
+                }
+
+
+            }
+
+
+
+
+            if( item.isImg () ){
                 mReport->addVerticalSpacing (0.3);
+
+                SerikBLDCore::Faaliyet::ImgItem imgItem;
+                imgItem.setDocumentView (item.view ());
+
+                auto path = mDB->downloadFile (imgItem.getImgOid ().c_str ());
+
+                QImage img;
+                if( img.load (path.c_str ())){
+
+
+                    KDReports::ImageElement imgElement(img);
+                    imgElement.setWidth (80,KDReports::Percent);
+
+
+                    mReport->addElement (imgElement,Qt::AlignCenter);
+
+
+                    KDReports::TextElement imgTitle;
+                    //  10 Karakter Boşluk
+                    imgTitle.setText (item.getText ().c_str ());
+                    imgTitle.setFontFamily ("Tahoma");
+                    imgTitle.setPointSize (11);
+                    mReport->addElement (imgTitle,Qt::AlignCenter);
+
+                    mReport->addVerticalSpacing (0.3);
+                }
+
+
+
+
             }
 
 
 
 
-        }
+            if( item.isTable () ){
+                mReport->addVerticalSpacing (1);
+                SerikBLDCore::Faaliyet::TableItem tableItem;
+                tableItem.setDocumentView (item.view ());
 
-
-
-
-        if( item.isTable () ){
-            mReport->addVerticalSpacing (1);
-            SerikBLDCore::Faaliyet::TableItem tableItem;
-            tableItem.setDocumentView (item.view ());
-
-            {
-                KDReports::TextElement textElement;
-                textElement.setText (tableItem.getText ().c_str ());
-                textElement.setFontFamily ("Arial");
-                textElement.setPointSize (11);
-                textElement.setBold (true);
-                mReport->addElement (textElement,Qt::AlignCenter);
-            }
-
-
-            KDReports::TableElement tableElement;
-            tableElement.setHeaderColumnCount (tableItem.column ());
-
-            int jj = 0;
-            for( const auto &headerText : tableItem.headers () ){
-
-                KDReports::TextElement textElement;
-                textElement.setText (headerText.c_str ());
-                textElement.setFontFamily ("Arial");
-                textElement.setPointSize (10);
-                textElement.setBold (true);
-                tableElement.cell (0,jj++).addElement (textElement);
-            }
-
-            for( int i = 0 ; i < tableItem.row () ; i++ ){
-                for( int j = 0 ; j < tableItem.column () ; j++ ){
+                {
                     KDReports::TextElement textElement;
-                    textElement.setText (tableItem.cell (i,j).c_str ());
+                    textElement.setText (tableItem.getText ().c_str ());
                     textElement.setFontFamily ("Arial");
-                    textElement.setPointSize (9);
-                    tableElement.cell (i+1,j).addElement (textElement);
-                    if( i%2 == 0 ){
-                        tableElement.cell (i,j).setBackground (QBrush(QColor(225,225,245)));
+                    textElement.setPointSize (11);
+                    textElement.setBold (true);
+                    mReport->addElement (textElement,Qt::AlignCenter);
+                }
+
+
+                KDReports::TableElement tableElement;
+                tableElement.setHeaderColumnCount (tableItem.column ());
+
+                int jj = 0;
+                for( const auto &headerText : tableItem.headers () ){
+
+                    KDReports::TextElement textElement;
+                    textElement.setText (headerText.c_str ());
+                    textElement.setFontFamily ("Arial");
+                    textElement.setPointSize (10);
+                    textElement.setBold (true);
+                    tableElement.cell (0,jj++).addElement (textElement);
+                }
+
+                for( int i = 0 ; i < tableItem.row () ; i++ ){
+                    for( int j = 0 ; j < tableItem.column () ; j++ ){
+                        KDReports::TextElement textElement;
+                        textElement.setText (tableItem.cell (i,j).c_str ());
+                        textElement.setFontFamily ("Arial");
+                        textElement.setPointSize (9);
+                        tableElement.cell (i+1,j).addElement (textElement,Qt::AlignLeft);
+                        if( i%2 == 0 ){
+                            tableElement.cell (i,j).setBackground (QBrush(QColor(225,225,245)));
+                        }
                     }
                 }
+                tableElement.setBorder (1);
+                tableElement.setBorderBrush (QBrush(QColor(150,150,150)));
+                tableElement.setWidth (100,KDReports::Unit::Percent);
+
+                //            KDReports::Frame frame;
+
+                //            frame.setHeight(100);
+                //            frame.setWidth(200);
+                //            frame.setBorder(1);
+
+
+                //            mReport->addElement (frame,Qt::AlignJustify);
+
+
+                mReport->addElement (tableElement,Qt::AlignCenter);
+
+                mReport->addVerticalSpacing (5);
             }
-            tableElement.setBorder (1);
-            tableElement.setBorderBrush (QBrush(QColor(150,150,150)));
-            tableElement.setWidth (100,KDReports::Percent);
-
-            mReport->addElement (tableElement);
-
-            mReport->addVerticalSpacing (5);
         }
     }
     birimCounter++;
@@ -668,15 +805,13 @@ void BirimListForm::buildContent(SerikBLDCore::Faaliyet::FaaliyetItem *faaliyetI
         auto view = faaliyetItem->view()["faaliyet"].get_array().value;
 
         for( const auto &item : view ){
-//            qDebug() << "--"<<bsoncxx::to_json(item.get_document().view()).c_str() <<"\n";
-
             SerikBLDCore::Faaliyet::RaporItem _item;
             _item.setDocumentView(item.get_document().view());
-
             arrList.push_back(_item);
         }
     } catch (bsoncxx::exception &e) {
         qDebug() << e.what();
+        return;
     }
 
     {
@@ -809,6 +944,7 @@ void BirimListForm::buildMeclisUyeleri()
         mReport->addElement (element,Qt::AlignmentFlag::AlignCenter);
 
         KDReports::TableElement table;
+        table.setBorder(0.1);
 
         int i = 0;
         int j = 0;
@@ -823,38 +959,29 @@ void BirimListForm::buildMeclisUyeleri()
 
                     auto imgPath = mTCManager->downloadFile (tcItem.value ()->FotoOid ());
 
-                    KDReports::Frame frame;
+                    //                    KDReports::Frame frame;
 
                     QImage img;
                     if( img.load (imgPath.c_str ()) ){
                         img = img.scaledToWidth (100,Qt::SmoothTransformation);
-                        frame.addElement (KDReports::ImageElement(img),Qt::AlignCenter);
+                        table.cell (i,j).addElement (KDReports::ImageElement(img),Qt::AlignCenter);
+
+                        //                        frame.addElement (KDReports::ImageElement(img),Qt::AlignCenter);
                     }
                     KDReports::TextElement adSoyadElement(tcItem.value ()->AdSoyad ());
                     adSoyadElement.setBold (true);
                     adSoyadElement.setFontFamily ("Arial");
                     adSoyadElement.setPointSize (9);
-                    frame.addElement (adSoyadElement,Qt::AlignCenter);
+                    //                    frame.addElement (adSoyadElement,Qt::AlignCenter);
+                    table.cell (i,j).addElement (adSoyadElement,Qt::AlignCenter);
 
-                    ///Komisyon Üyelikleri
-                    //                    for( const auto &komisyon : item.komisyonUyelikleri () ){
-
-                    //                        KDReports::TextElement komisyonText(komisyon);
-                    //                        komisyonText.setBold (false);
-                    //                        komisyonText.setItalic (true);
-                    //                        komisyonText.setFontFamily ("Arial");
-                    //                        komisyonText.setPointSize (8);
-                    //                        frame.addElement (komisyonText,Qt::AlignCenter);
-
-                    //                    }
-
-                    frame.setBorder (0);
-                    //                    frame.setTopMargin (-5);
-
-                    table.cell (i,j).addElement (frame,Qt::AlignCenter);
+                    //                    frame.setBorder (1);
+                    //                    table.cell (i,j).addElement (frame,Qt::AlignTop);
                 }else{
                     table.cell (i,j).addElement (KDReports::TextElement("null_ptr"));
                 }
+
+                table.cell(i,j).addVerticalSpacing(0);
 
 
                 j++;
@@ -866,7 +993,7 @@ void BirimListForm::buildMeclisUyeleri()
 
         }
 
-        table.setBorder (0);
+        //        table.setBorder (0);
         table.setWidth (100,KDReports::Unit::Percent);
         mReport->addElement (table,Qt::AlignJustify);
         //        mReport->addPageBreak ();
@@ -884,8 +1011,6 @@ void BirimListForm::buildMeclisUyeleri()
 
 void BirimListForm::buildLiderler()
 {
-
-    std::cout << __LINE__ << " " << __FUNCTION__ << "\n";
 
     {
         QImage imgLogo;
@@ -1034,8 +1159,8 @@ void BirimListForm::buildLiderler()
                                                  "çalışmalarımıza devam ediyoruz. Geride bıraktığımız süreç içerisinde pandeminin yarattığı "
                                                  "olumsuz koşulları ortadan kaldırmak ve ilçemizin süregelen sorunlarına kalıcı çözümler "
                                                  "bulmak için canla başla çalışıp, sahip olduğumuz refah ve huzuru birlikte koruduk ve geliştirdik. "
-                                                 "Bölgemizde yaşanan yangın, sel, hortum gibi doğal afetlerde, üzerimize düşen sorumluluğun farkında olup "
-                                                 "tüm kaynaklarımızla halkımızın ve komşularımızın yanında olduk."));
+                                                 "İlçemizde yaşanan doğal afetlerde, üzerimize düşen sorumluluğun farkında olup "
+                                                 "tüm kaynaklarımızla halkımızın yanında olduk."));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
@@ -1058,7 +1183,7 @@ void BirimListForm::buildLiderler()
         {
             KDReports::TextElement title(QString("\tBütün bu çalışmalarımızda emeğiyle, özverisiyle bizleri destekleyen çalışma arkadaşlarımıza, "
                                                  "meclis üyelerimize ve her koşulda yanımızda olan siz değerli hemşehrilerimize teşekkür eder, "
-                                                 "2021 Yılı Faaliyet Raporumuzu bilgilerinize sunarım."));
+                                                 +QString::number(ui->spinBox_yil->value())+" Yılı Faaliyet Raporumuzu bilgilerinize sunarım."));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
@@ -1124,7 +1249,10 @@ void BirimListForm::buildLiderler()
         }
 
         {
-            KDReports::TextElement title(QString("\tBu raporda yer alan bilgilerin güvenilir, tam ve doğru olduğunu beyan ederim. Bu raporda açıklanan faaliyetler için bütçe ile tahsis edilmiş kaynakların, planlanmış amaçlar doğrultusunda ve iyi mali yönetim ilkelerine uygun olarak kullanıldığını ve iç kontrol sisteminin işlemlerin yasallık ve düzenliliğine ilişkin yeterli güvenceyi sağladığını bildiririm."));
+            KDReports::TextElement title(QString("\tBu raporda yer alan bilgilerin güvenilir, tam ve doğru olduğunu beyan ederim. "
+                                                 "Bu raporda açıklanan faaliyetler için bütçe ile tahsis edilmiş kaynakların, "
+                                                 "planlanmış amaçlar doğrultusunda ve iyi mali yönetim ilkelerine uygun olarak kullanıldığını ve iç kontrol sisteminin "
+                                                 "işlemlerin yasallık ve düzenliliğine ilişkin yeterli güvenceyi sağladığını bildiririm."));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
@@ -1132,7 +1260,9 @@ void BirimListForm::buildLiderler()
 
 
         {
-            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, iç kontroller, iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/2021"));
+            KDReports::TextElement title(QString("\tBu güvence, üst yönetici olarak sahip olduğum bilgi ve değerlendirmeler, "
+                                                 "iç kontroller, iç denetçi raporları ile Sayıştay raporları gibi bilgim dahilindeki hususlara dayanmaktadır. "
+                                                 "Burada raporlanmayan, idarenin menfaatlerine zarar veren herhangi bir husus hakkında bilgim olmadığını beyan ederim. 31/Aralık/"+QString::number(ui->spinBox_yil->value())));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);
