@@ -904,6 +904,7 @@ void BirimListForm::buildMeclisUyeleri()
     partiList.append ("Milliyetçi Hareket Partisi");
     partiList.append ("İyi Parti");
     partiList.append ("Cumhuriyet Halk Partisi");
+    partiList.append ("Bağımsız");
 
     //    partiList.append ("Bağımsız");
 
@@ -930,10 +931,15 @@ void BirimListForm::buildMeclisUyeleri()
             //            mReport->addElement (KDReports::HLineElement());
         }
 
-        //        if( parti == "Bağımsız" ){
-        //            mReport->addVerticalSpacing (45);
-        //            mReport->addElement (KDReports::HLineElement());
-        //        }
+        // if( parti == "Cumhuriyet Halk Partisi" ){
+        //     mReport->addPageBreak ();
+        //     //            mReport->addElement (KDReports::HLineElement());
+        // }
+
+        if( parti == "Bağımsız" ){
+            mReport->addVerticalSpacing (45);
+            mReport->addElement (KDReports::HLineElement());
+        }
 
         KDReports::TextElement element(parti);
 
@@ -1155,12 +1161,9 @@ void BirimListForm::buildLiderler()
         //        }
 
         {
-            KDReports::TextElement title(QString("\tGöreve geldiğimiz 2019 yılından bugüne şeffaf bir yerel yönetim anlayışı ile "
-                                                 "çalışmalarımıza devam ediyoruz. Geride bıraktığımız süreç içerisinde pandeminin yarattığı "
-                                                 "olumsuz koşulları ortadan kaldırmak ve ilçemizin süregelen sorunlarına kalıcı çözümler "
-                                                 "bulmak için canla başla çalışıp, sahip olduğumuz refah ve huzuru birlikte koruduk ve geliştirdik. "
-                                                 "İlçemizde yaşanan doğal afetlerde, üzerimize düşen sorumluluğun farkında olup "
-                                                 "tüm kaynaklarımızla halkımızın yanında olduk."));
+            KDReports::TextElement title(QString("\tGöreve geldiğimiz 2019 yılından bugüne kadar şeffaf bir yerel yönetim anlayışı ile "
+                                                 "çalışmalarımıza devam ediyoruz. İlçemizin süregelen sorunlarına kalıcı çözümler "
+                                                 "bulmak için canla başla çalışıp, sahip olduğumuz refah ve huzuru birlikte koruduk ve geliştirdik. "));
             title.setFontFamily ("Tahoma");
             title.setPointSize (12);
             mReport->addElement (title,Qt::AlignmentFlag::AlignJustify);

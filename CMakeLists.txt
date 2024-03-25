@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
 message("MSVC_TOOLSET_VERSION   " ${MSVC_TOOLSET_VERSION})
 message("CMAKE_CXX_COMPILER_VERSION   " ${CMAKE_CXX_COMPILER_VERSION})
 
-find_package(Qt6 6.3 COMPONENTS Core Gui Xml Widgets PrintSupport REQUIRED)
+find_package(Qt6 6.2 COMPONENTS Core Gui Xml Widgets PrintSupport REQUIRED)
 
 
 set(bsoncxx_DIR C:/Mongo/mongo-msvc2022x64-noBoost/lib/cmake/bsoncxx-3.7.0)
@@ -58,10 +58,10 @@ target_link_libraries(FaaliyetReporter PRIVATE mongo::mongocxx_shared)
 #target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReport/msvc2017_64/include")#KDReports 1.9
 
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Qt/KDReports/lib/cmake")
-find_package(KDReports-qt6 REQUIRED)
-target_link_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/lib")
-target_include_directories(FaaliyetReporter PUBLIC "C:/Qt/KDReports/include")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/KDReport/lib/cmake")
+# find_package(KDReports-qt6 REQUIRED)
+target_link_directories(FaaliyetReporter PUBLIC "C:/KDReport/lib")
+target_include_directories(FaaliyetReporter PUBLIC "C:/KDReport/include")
 
 
 
